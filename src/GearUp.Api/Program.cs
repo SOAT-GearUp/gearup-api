@@ -89,7 +89,12 @@ if (DocumentacaoApi.Habilitada(app.Environment, app.Configuration))
 
 app.UseMiddleware<CorrelationIdMiddleware>();
 app.UseExceptionHandler();
-app.UseHttpsRedirection();
+
+if (!app.Environment.IsDevelopment())
+{
+    app.UseHttpsRedirection();
+}
+
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
