@@ -2,6 +2,7 @@ using GearUp.Api.Documentacao;
 using GearUp.Api.ErrorHandling;
 using GearUp.Api.HealthChecks;
 using GearUp.Api.Observability;
+using GearUp.Api.Configuracao;
 using GearUp.Application;
 using GearUp.Infrastructure;
 using GearUp.Infrastructure.Persistence;
@@ -89,7 +90,7 @@ if (DocumentacaoApi.Habilitada(app.Environment, app.Configuration))
 
 app.UseMiddleware<CorrelationIdMiddleware>();
 app.UseExceptionHandler();
-app.UseHttpsRedirection();
+app.UseHttpsRedirectionForaDeDesenvolvimento(app.Environment);
 app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
