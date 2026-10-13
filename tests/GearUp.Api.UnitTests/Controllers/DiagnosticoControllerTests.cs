@@ -28,7 +28,7 @@ public sealed class DiagnosticoControllerTests
         Assert.IsType<NotFoundResult>(result);
     }
 
-    private static IWebHostEnvironment CriarAmbiente(string nome) =>
+    private static AmbienteTeste CriarAmbiente(string nome) =>
         new AmbienteTeste
         {
             EnvironmentName = nome
