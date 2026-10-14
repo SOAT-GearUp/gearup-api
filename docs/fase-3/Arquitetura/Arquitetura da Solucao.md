@@ -6,7 +6,7 @@ Na Fase 3 o GearUp deixa de ser um único repositório com "tudo junto" e passa 
 
 | Repositório | Responsabilidade | Pipeline |
 |---|---|---|
-| [gearup-api](https://github.com/SOAT-GearUp/gearup-api) | API .NET 10 (DDD + Clean Architecture), manifests Kubernetes, documentação | CI em todo push/PR; CD em `homolog` e `master` |
+| [gearup-api](https://github.com/SOAT-GearUp/gearup-api) | API .NET 10, testes, imagem e manifests do workload da aplicação | CI em todo push/PR; CD em `homolog` e `master` |
 | [gearup-infra-k8s](https://github.com/SOAT-GearUp/gearup-infra-k8s) | VPC, EKS, ECR, OpenTelemetry Collector, Datadog Agent, dashboards e monitores | plan em PR/`homolog`; apply em `main` |
 | [gearup-infra-db](https://github.com/SOAT-GearUp/gearup-infra-db) | RDS PostgreSQL gerenciado + credenciais no SSM | plan em PR/`homolog`; apply em `main` |
 | [gearup-lambda-auth](https://github.com/SOAT-GearUp/gearup-lambda-auth) | Lambda de autenticação por CPF e senha, Lambda authorizer e API Gateway | deploy por ambiente em `homolog` e `main` |

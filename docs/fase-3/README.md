@@ -6,7 +6,7 @@ Esta fase eleva o GearUp a um nível de operação corporativa: API Gateway, aut
 
 | Repositório | Conteúdo |
 |---|---|
-| [gearup-api](https://github.com/SOAT-GearUp/gearup-api) | API, manifests Kubernetes, pipeline de deploy e esta documentação |
+| [gearup-api](https://github.com/SOAT-GearUp/gearup-api) | API, testes, imagem Docker, manifests do workload, pipeline de entrega e documentação |
 | [gearup-infra-k8s](https://github.com/SOAT-GearUp/gearup-infra-k8s) | VPC, EKS, ECR, Collector, Datadog Agent, dashboards e monitores |
 | [gearup-infra-db](https://github.com/SOAT-GearUp/gearup-infra-db) | RDS PostgreSQL e credenciais no SSM |
 | [gearup-lambda-auth](https://github.com/SOAT-GearUp/gearup-lambda-auth) | Lambda de autenticação por CPF e senha, authorizer e API Gateway |
@@ -52,6 +52,8 @@ A ADR-001 (evolução para cloud native e CI/CD) está na [documentação da Fas
 | Dashboards: volume diário, tempo por status, erros | dashboard "GearUp - Operação" |
 | Melhoria e documentação do modelo de dados | migration `Fase3ConsistenciaEPerformance` + [Modelagem](Banco%20de%20Dados/Modelagem%20e%20Justificativa.md) |
 
-## Implementação local da observabilidade
+## Fronteiras de observabilidade
 
-Os arquivos executáveis e as instruções de validação local estão em [`infra/observability/datadog`](../../infra/observability/datadog/README.md).
+A instrumentação OpenTelemetry pertence ao código da API. Os arquivos em [`infra/observability`](../../infra/observability/collector/README.md) executam Collector e Agent somente no ambiente Docker local.
+
+Collector, Datadog Agent, dashboards e monitores dos ambientes Kubernetes são mantidos exclusivamente no [`gearup-infra-k8s`](https://github.com/SOAT-GearUp/gearup-infra-k8s). Não há Terraform do Datadog neste repositório.

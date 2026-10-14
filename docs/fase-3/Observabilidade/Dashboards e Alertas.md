@@ -39,6 +39,7 @@ Template `$env` alterna entre `homolog` e `production`.
 |---|---|---|
 | Falhas no processamento de OS | > 5 erros em `api/ordens-servico*` em 5 min (aviso ≥ 1) | **alerta exigido** |
 | Erro não tratado na API | qualquer log `status:error` em 5 min | exceções que viraram 500 |
+| Respostas HTTP 404 | > 8 por rota em 5 min (aviso > 6) | rotas inválidas ou recursos ausentes fora do padrão |
 | Latência p95 > 1 s | 10 min (aviso 0,5 s) | degradação percebida pelo cliente |
 | CPU > 80% do limite | 10 min, por pod | HPA no teto ou pod travado |
 | Memória > 85% do limite | 10 min, por pod | risco de OOMKill |
