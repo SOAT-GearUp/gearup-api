@@ -8,10 +8,17 @@ Na Fase 1 nasceu o domínio (ordens de serviço, orçamentos, estoque); na Fase 
 
 | Repositório | Propósito |
 |---|---|
-| **[gearup-api](https://github.com/SOAT-GearUp/gearup-api)** (este) | API, testes, manifests Kubernetes, pipeline de deploy no EKS e documentação arquitetural |
+| **[gearup-api](https://github.com/SOAT-GearUp/gearup-api)** (este) | Código da API, testes, imagem Docker, manifests do workload e pipeline de entrega da aplicação |
 | [gearup-infra-k8s](https://github.com/SOAT-GearUp/gearup-infra-k8s) | Terraform: VPC, EKS, ECR, OpenTelemetry Collector, Datadog Agent, dashboards e monitores |
 | [gearup-infra-db](https://github.com/SOAT-GearUp/gearup-infra-db) | Terraform: RDS PostgreSQL gerenciado e credenciais no SSM |
 | [gearup-lambda-auth](https://github.com/SOAT-GearUp/gearup-lambda-auth) | Lambda de autenticação por CPF e senha, Lambda authorizer e API Gateway |
+
+### Fronteiras de responsabilidade
+
+- O `gearup-infra-k8s` cria e mantém a **plataforma Kubernetes**: rede, EKS, ECR, add-ons, Collector, Agent, dashboards e monitores do Datadog.
+- O `gearup-api` mantém o **workload da aplicação**: `Deployment`, `Service`, `HPA`, overlays por ambiente e o CD que publica cada versão.
+- Os arquivos em `infra/observability` neste repositório existem somente para **execução Docker local**. A configuração de produção e os recursos do Datadog ficam no `gearup-infra-k8s`.
+- Terraform não é mantido neste repositório. Cada recurso de infraestrutura pertence ao repositório especializado responsável por seu ciclo de vida.
 
 ## Arquitetura deste repositório
 
@@ -163,7 +170,8 @@ A API utiliza o endereço interno `http://otel-collector:4317`; nenhuma configur
 | Tema | Documento |
 |---|---|
 | Arquitetura e portabilidade | [OpenTelemetry Collector e Datadog](docs/fase-3/Observabilidade/OpenTelemetry%20Collector%20e%20Datadog.md) |
-| Execução local | [Ambiente local de observabilidade](infra/observability/datadog/README.md) |
+| Execução local com Datadog | [Ambiente local de observabilidade](infra/observability/datadog/README.md) |
+| Dashboards e monitores como código | [gearup-infra-k8s/datadog](https://github.com/SOAT-GearUp/gearup-infra-k8s/tree/main/datadog) |
 | Dashboards, monitores e correlação de logs no EKS | [Dashboards e Alertas](docs/fase-3/Observabilidade/Dashboards%20e%20Alertas.md) |
 
 ## Documentos da Fase 3
@@ -197,8 +205,8 @@ A API utiliza o endereço interno `http://otel-collector:4317`; nenhuma configur
 | `src/` | Projetos da aplicação |
 | `tests/` | Testes unitários e de integração |
 | `docs/` | Documentação organizada por fase |
-| `k8s/` | Manifests Kubernetes local e AWS |
-| `infra/` | Scripts Terraform |
+| `k8s/` | Especificação do workload da API: manifests locais, base Kustomize e overlays de ambiente |
+| `infra/observability/` | Collector e integração Datadog exclusivamente para desenvolvimento local |
 | `.github/workflows/` | Pipelines de CI, SonarQube e CD AWS |
 
 ## Qualidade
