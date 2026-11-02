@@ -87,6 +87,8 @@ dotnet test GearUp.slnx
 | `homolog` | homologação | workflow **CD**: testes → imagem no ECR (tag = SHA) → `k8s/overlays/homolog` no namespace `gearup-homolog` → smoke test |
 | `master` (protegida, só via PR) | produção | mesmo fluxo em `gearup-production`, reaproveitando a imagem já testada em homologação |
 
+Fluxo de promoção: branch de trabalho → PR para `homolog` (CI) → merge (CD homolog) → PR `homolog` → `master` (CI obrigatório) → merge (CD production).
+
 Pré-requisitos, ordem de deploy entre os repositórios, atualização das credenciais do lab e destroy: [Guia de Deploy e Operação](docs/fase-3/Operacao/Guia%20de%20Deploy%20e%20Operacao.md).
 
 ## Escalabilidade Horizontal
