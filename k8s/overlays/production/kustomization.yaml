@@ -36,5 +36,5 @@ patches:
       name: gearup-api
     patch: |-
       - op: add
-        path: /spec/template/metadata/labels/tags.datadog.com~1env
+        path: /spec/template/metadata/labels/tags.datadoghq.com~1env
         value: production

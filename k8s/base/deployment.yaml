@@ -27,7 +27,21 @@ spec:
         app: gearup-api
         # Unified service tagging do Datadog: env/service/version nas
         # métricas de CPU e memória do Kubernetes coletadas pelo Agent.
-        tags.datadog.com/service: gearup-api
+        tags.datadoghq.com/service: gearup-api
+      annotations:
+        ad.datadoghq.com/gearup-api.checks: |
+          {
+            "http_check": {
+              "instances": [
+                {
+                  "name": "gearup-api-ready",
+                  "url": "http://%%host%%:8080/health/ready",
+                  "timeout": 5,
+                  "tags": ["service:gearup-api"]
+                }
+              ]
+            }
+          }
     spec:
       automountServiceAccountToken: false
       securityContext:
@@ -50,6 +64,8 @@ spec:
           env:
             - name: OTEL_EXPORTER_OTLP_ENDPOINT
               value: http://otel-collector.observabilidade.svc.cluster.local:4317
+            - name: OTEL_EXPORTER_OTLP_METRICS_TEMPORALITY_PREFERENCE
+              value: Delta
             - name: K8S_POD_NAME
               valueFrom:
                 fieldRef:
