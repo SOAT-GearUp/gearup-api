@@ -194,4 +194,4 @@ Definidos no parameter group do `gearup-infra-db`:
 
 ## 6. Isolamento por ambiente
 
-Uma instância, dois databases: `gearup_homolog` e `gearup_production`. Cada ambiente tem sua connection string (montada pela pipeline a partir do SSM) e sua própria Lambda apontando para o database correspondente. Trade-off de custo em [RFC-001](../RFC/RFC-001%20-%20Nuvem%20e%20estrategia%20de%20ambientes.md).
+Uma instância RDS por ambiente: `gearup-postgres-homolog` (database `gearup_homolog`, dados fictícios) e `gearup-postgres` (database `gearup_production`, dados reais). Cada ambiente tem suas próprias credenciais no SSM (`/gearup/<amb>/banco/*`), sua connection string (montada pela pipeline) e sua própria Lambda apontando para o banco correspondente. Custo e decisão em [RFC-001](../RFC/RFC-001%20-%20Nuvem%20e%20estrategia%20de%20ambientes.md) e [RFC-002](../RFC/RFC-002%20-%20Banco%20de%20dados%20gerenciado.md).

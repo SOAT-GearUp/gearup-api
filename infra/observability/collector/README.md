@@ -42,39 +42,6 @@ docker compose `
   down
 ```
 
-## Executar somente o Collector
+Os registros `ResourceSpans`, `ResourceMetrics` e `ResourceLogs` do comando `logs` confirmam o recebimento de traces, métricas e logs.
 
-Na raiz do repositório:
-
-```powershell
-docker compose `
-  -f .\infra\observability\collector\docker-compose.debug.yml `
-  up -d
-```
-
-Configure e execute a API:
-
-```powershell
-$env:OTEL_EXPORTER_OTLP_ENDPOINT="http://localhost:4317"
-dotnet run --project .\src\GearUp.Api\GearUp.Api.csproj
-```
-
-Gere tráfego usando a porta exibida pela API e acompanhe a telemetria:
-
-```powershell
-Invoke-WebRequest http://localhost:5037/health/live
-
-docker compose `
-  -f .\infra\observability\collector\docker-compose.debug.yml `
-  logs -f otel-collector
-```
-
-Os registros `ResourceSpans`, `ResourceMetrics` e `ResourceLogs` confirmam o recebimento de traces, métricas e logs.
-
-## Encerrar somente o Collector
-
-```powershell
-docker compose `
-  -f .\infra\observability\collector\docker-compose.debug.yml `
-  down
-```
+Este diretório contém somente a configuração necessária para o ambiente Docker local. O Collector de produção, o Datadog Agent, dashboards e monitores são mantidos no repositório [`gearup-infra-k8s`](https://github.com/SOAT-GearUp/gearup-infra-k8s).
