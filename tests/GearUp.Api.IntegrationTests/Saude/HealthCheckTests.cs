@@ -30,7 +30,7 @@ public sealed class HealthCheckTests(GearUpApiFactory factory) : IntegrationTest
 
         var json = await ReadJsonAsync(response);
         Assert.Equal("Healthy", json["status"]?.GetValue<string>());
-        Assert.Equal("1.0.0", json["versao"]?.GetValue<string>());
+        Assert.Equal("1.0.1", json["versao"]?.GetValue<string>());
 
         var verificacoes = json["verificacoes"]?.AsArray();
         Assert.NotNull(verificacoes);
