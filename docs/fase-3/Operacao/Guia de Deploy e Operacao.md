@@ -32,7 +32,7 @@ Cada passo é um **merge de Pull Request na branch principal** (ou *Actions → 
 | # | Repositório | Workflow | Tempo | Cria |
 |---|---|---|---|---|
 | 1 | gearup-infra-k8s | Terraform (EKS) → apply | ~15 min | VPC, EKS, nós, ECR, metrics-server, Collector, Datadog Agent, dashboards |
-| 2 | gearup-infra-db | Terraform (RDS) → apply | ~8 min | RDS PostgreSQL + `/gearup/banco/*` |
+| 2 | gearup-infra-db | Terraform (RDS) → apply | ~10 min | uma instância RDS PostgreSQL por ambiente + `/gearup/<amb>/banco/*` |
 | 3 | gearup-api | CD → `homolog` e depois `master` | ~6 min cada | imagem no ECR, namespaces, NLBs, `/gearup/<amb>/api/host` e `/jwt/chave` |
 | 4 | gearup-lambda-auth | CI/CD Lambda → `homolog` e `main` | ~2 min cada | Lambdas, API Gateway, alarmes, `/gearup/<amb>/gateway/url` |
 

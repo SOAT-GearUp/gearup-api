@@ -47,13 +47,13 @@ flowchart LR
                 end
             end
             subgraph Privadas["Subnets privadas (sem rota p/ internet)"]
-                RDS[(RDS PostgreSQL 17<br/>gearup_homolog<br/>gearup_production<br/>gearup-infra-db)]
+                RDS[(RDS PostgreSQL 17<br/>gearup-postgres-homolog<br/>gearup-postgres · production<br/>gearup-infra-db)]
                 LAENI[ENI da Lambda]
             end
         end
 
         ECR[(ECR<br/>gearup-api)]
-        SSM[(SSM Parameter Store<br/>/gearup/banco/*<br/>/gearup/&lt;amb&gt;/jwt/chave<br/>/gearup/&lt;amb&gt;/api/host)]
+        SSM[(SSM Parameter Store<br/>/gearup/&lt;amb&gt;/banco/*<br/>/gearup/&lt;amb&gt;/jwt/chave<br/>/gearup/&lt;amb&gt;/api/host)]
         CW[CloudWatch<br/>logs + alarmes]
         S3[(S3<br/>gearup-tfstate)]
     end
@@ -91,7 +91,7 @@ Os repositórios **não leem o state do Terraform uns dos outros**. Cada depend�
 |---|---|---|---|
 | gearup-infra-k8s | VPC e subnets | tags `Name=gearup-vpc` e `Camada=publica/privada` | infra-db, lambda-auth |
 | gearup-infra-k8s | cluster `gearup-eks`, ECR `gearup-api`, Collector | nomes fixos | gearup-api (CD) |
-| gearup-infra-db | host, porta, usuário e senha do RDS | SSM `/gearup/banco/*` | gearup-api (CD), lambda-auth |
+| gearup-infra-db | host, porta, usuário e senha do RDS de cada ambiente | SSM `/gearup/<amb>/banco/*` | gearup-api (CD), lambda-auth |
 | gearup-api (CD) | chave JWT e senha do admin, por ambiente | SSM `/gearup/<amb>/jwt/chave`, `/gearup/<amb>/api/senha-admin` | lambda-auth |
 | gearup-api (CD) | hostname do NLB da API | SSM `/gearup/<amb>/api/host` | lambda-auth (integração do gateway) |
 | gearup-lambda-auth | URL pública do gateway | SSM `/gearup/<amb>/gateway/url` | gearup-api (resumo do deploy), documentação |
@@ -115,13 +115,13 @@ O destroy segue a ordem inversa (lambda → gearup-api → db → k8s). O passo 
 |---|---|---|
 | Branch que dispara o deploy | `homolog` | `master` (gearup-api) / `main` (demais) |
 | Namespace Kubernetes | `gearup-homolog` | `gearup-production` |
-| Database no RDS | `gearup_homolog` | `gearup_production` |
+| Instância RDS (database) | `gearup-postgres-homolog` (`gearup_homolog`) | `gearup-postgres` (`gearup_production`) |
 | API Gateway + Lambdas | pilha própria | pilha própria |
 | HPA | 1–2 réplicas | 1–4 réplicas |
 | Swagger | habilitado | desabilitado |
-| Cluster EKS e instância RDS | compartilhados | compartilhados |
+| Cluster EKS | compartilhado (namespace próprio) | compartilhado (namespace próprio) |
 
-Compartilhar cluster e instância RDS entre ambientes é uma decisão de custo documentada na [RFC-001](../RFC/RFC-001%20-%20Nuvem%20e%20estrategia%20de%20ambientes.md).
+Cada ambiente tem o próprio banco; só o cluster EKS é compartilhado, por custo, como documentado na [RFC-001](../RFC/RFC-001%20-%20Nuvem%20e%20estrategia%20de%20ambientes.md).
 
 ## Segurança
 
@@ -139,8 +139,8 @@ Compartilhar cluster e instância RDS entre ambientes é uma decisão de custo d
 | EKS control plane | 0,100 | cobra 24/7, inclusive com o lab parado |
 | 2 × EC2 t3.medium (nós) | 0,083 | o lab religa as instâncias a cada sessão |
 | 2 × NLB (homolog + production) | 0,045 | criados pelo Service `LoadBalancer` |
-| RDS db.t3.micro + 20 GB gp3 | 0,021 | cobra 24/7 |
+| 2 × RDS db.t3.micro + 20 GB gp3 (homolog + production) | 0,042 | cobra 24/7 |
 | API Gateway, Lambda, SSM, S3, CloudWatch | ~0 | pay-per-use, dentro do free tier |
-| **Total** | **~0,25/h ≈ US$ 6/dia** | **destroy ao fim de cada sessão** |
+| **Total** | **~0,27/h ≈ US$ 6,5/dia** | **destroy ao fim de cada sessão** |
 
 Sem NAT Gateway (economia de US$ 0,045/h + tráfego): ver [ADR-005](../ADR/ADR-005%20-%20Rede%20sem%20NAT%20Gateway.md).

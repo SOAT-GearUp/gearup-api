@@ -24,12 +24,12 @@ Até a Fase 2 o PostgreSQL rodava como StatefulSet dentro do cluster (ou num RDS
 
 **Amazon RDS for PostgreSQL 17**, provisionado pelo repositório `gearup-infra-db`:
 
-- `db.t3.micro`, 20 GB gp3 criptografado, single-AZ.
+- **Uma instância por ambiente** (`gearup-postgres-homolog` e `gearup-postgres`), cada uma `db.t3.micro`, 20 GB gp3 criptografado, single-AZ. Homologação nunca toca os dados de produção.
 - Subnets privadas sem rota para a internet; security group liberando 5432 apenas para o CIDR da VPC; `publicly_accessible = false`.
 - Parameter group próprio: `rds.force_ssl = 1`, `log_min_duration_statement = 500 ms`, `idle_in_transaction_session_timeout = 60 s`, `pg_stat_statements`.
 - Backup automático de 1 dia (gratuito até o tamanho do banco) com point-in-time recovery.
-- Senha gerada por `random_password` e publicada no SSM (`/gearup/banco/senha`, SecureString) — nenhuma pessoa escolhe ou digita a senha.
-- Um database por ambiente, criado pelas migrations do EF Core na primeira subida da API.
+- Senha gerada por `random_password` para cada instância e publicada no SSM (`/gearup/<amb>/banco/senha`, SecureString) — nenhuma pessoa escolhe ou digita a senha.
+- O schema de cada instância é criado pelas migrations do EF Core na primeira subida da API daquele ambiente.
 
 ### Por que continuar relacional
 
