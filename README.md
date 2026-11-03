@@ -96,6 +96,8 @@ dotnet test GearUp.slnx
 
 Fluxo de promoção: branch de trabalho → PR para `homolog` (CI) → merge (CD homolog) → PR `homolog` → `master` (CI obrigatório) → merge (CD production).
 
+Cada ambiente usa a sua própria instância RDS: homologação em `gearup-postgres-homolog` (dados fictícios) e produção em `gearup-postgres`; a pipeline lê as credenciais de `/gearup/<ambiente>/banco/*` no SSM.
+
 Pré-requisitos, ordem de deploy entre os repositórios, atualização das credenciais do lab e destroy: [Guia de Deploy e Operação](docs/fase-3/Operacao/Guia%20de%20Deploy%20e%20Operacao.md).
 
 ## Escalabilidade Horizontal
