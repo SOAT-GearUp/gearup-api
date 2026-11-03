@@ -8,7 +8,7 @@
 # A master é protegida: só recebe merge de Pull Request (o CI roda no PR).
 #
 # Pré-requisitos: gearup-infra-k8s (cluster, ECR, Collector) e gearup-infra-db
-# (RDS + /gearup/banco/* no SSM) aplicados. Depois deste deploy, rode a
+# (RDS + /gearup/<amb>/banco/* no SSM) aplicados. Depois deste deploy, rode a
 # pipeline do gearup-lambda-auth, que lê daqui /gearup/<amb>/api/host e
 # /gearup/<amb>/jwt/chave.
 #
@@ -142,8 +142,10 @@ jobs:
           garantir "/gearup/${AMBIENTE}/jwt/chave"
           garantir "/gearup/${AMBIENTE}/api/senha-admin"
 
-          DB_HOST=$(ler /gearup/banco/host) || { echo "::error::/gearup/banco/* não encontrado. Aplique o gearup-infra-db antes."; exit 1; }
-          CONEXAO="Host=${DB_HOST};Port=$(ler /gearup/banco/porta);Database=gearup_${AMBIENTE};Username=$(ler /gearup/banco/usuario);Password=$(ler /gearup/banco/senha);SSL Mode=Require"
+          # Cada ambiente tem a sua instância RDS (gearup-infra-db).
+          BANCO="/gearup/${AMBIENTE}/banco"
+          DB_HOST=$(ler "${BANCO}/host") || { echo "::error::${BANCO}/* não encontrado. Aplique o gearup-infra-db antes."; exit 1; }
+          CONEXAO="Host=${DB_HOST};Port=$(ler "${BANCO}/porta");Database=gearup_${AMBIENTE};Username=$(ler "${BANCO}/usuario");Password=$(ler "${BANCO}/senha");SSL Mode=Require"
 
           kubectl apply -f "k8s/overlays/${AMBIENTE}/namespace.yaml"
           kubectl create secret generic gearup-secret --namespace "$NAMESPACE" \

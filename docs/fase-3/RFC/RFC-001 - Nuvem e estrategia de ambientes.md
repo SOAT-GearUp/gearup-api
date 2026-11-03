@@ -40,16 +40,16 @@ A Fase 3 exige API Gateway, função serverless, banco gerenciado, Kubernetes co
 
 ### Estratégia de ambientes
 
-Duplicar tudo por ambiente dobraria o custo fixo (EKS US$ 0,10/h e RDS US$ 0,02/h cobram 24/7). A proposta separa o que é **custo fixo** do que é **pay-per-use**:
+Duplicar tudo por ambiente dobraria o custo fixo (EKS US$ 0,10/h e RDS US$ 0,02/h cobram 24/7). A proposta separa o que é **custo fixo** do que é **pay-per-use**, e duplica o custo fixo apenas onde ele é baixo e o isolamento importa (o banco):
 
 | Camada | Isolamento entre homolog e production |
 |---|---|
 | Cluster EKS | compartilhado; **namespaces** `gearup-homolog` e `gearup-production` |
-| Instância RDS | compartilhada; **databases** `gearup_homolog` e `gearup_production` |
+| Instância RDS | **uma por ambiente**: `gearup-postgres-homolog` (dados fictícios) e `gearup-postgres` (dados de produção); +US$ 0,02/h |
 | API Gateway + Lambdas | **pilhas separadas** (cobram por requisição: homolog parado custa zero) |
 | Segredos (JWT, admin) | separados por ambiente no SSM |
 
-Consequência nas pipelines de infraestrutura compartilhada (EKS e RDS): a branch `homolog` executa `terraform plan` (valida a mudança contra o ambiente real) e somente `main` executa `apply`. As pipelines da aplicação e da Lambda fazem deploy real nos dois ambientes.
+Consequência nas pipelines de infraestrutura (EKS e RDS, que provisionam os recursos dos dois ambientes): a branch `homolog` executa `terraform plan` (valida a mudança contra o ambiente real) e somente `main` executa `apply`. As pipelines da aplicação e da Lambda fazem deploy real nos dois ambientes.
 
 ## Riscos e mitigação
 
@@ -58,7 +58,7 @@ Consequência nas pipelines de infraestrutura compartilhada (EKS e RDS): a branc
 | Esquecer recursos ligados entre sessões | workflows de `destroy` em todos os repositórios; ordem documentada no guia de operação |
 | Credenciais expiradas no meio do pipeline | passo "Verificar credenciais" com mensagem clara; `scripts/atualizar-secrets-aws.ps1` atualiza os 4 repositórios de uma vez |
 | Mudança de homolog afetar produção no cluster compartilhado | isolamento por namespace, quotas de réplicas por ambiente (HPA 2 × 4) |
-| Um ambiente consumir conexões do outro no RDS | pool de conexões pequeno na Lambda (`max: 2`); `idle_in_transaction_session_timeout` |
+| Um ambiente consumir conexões ou dados do outro no RDS | eliminado: cada ambiente tem a própria instância e as próprias credenciais (`/gearup/<amb>/banco/*`) |
 
 ## Fora de escopo
 
