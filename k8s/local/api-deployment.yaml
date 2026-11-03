@@ -14,6 +14,26 @@ spec:
     metadata:
       labels:
         app: gearup-api
+        tags.datadoghq.com/service: gearup-api
+        tags.datadoghq.com/env: development
+        tags.datadoghq.com/version: local
+      annotations:
+        ad.datadoghq.com/gearup-api.checks: |
+          {
+            "http_check": {
+              "instances": [
+                {
+                  "name": "gearup-api-ready",
+                  "url": "http://%%host%%:8080/health/ready",
+                  "timeout": 5,
+                  "tags": [
+                    "service:gearup-api",
+                    "env:development"
+                  ]
+                }
+              ]
+            }
+          }
     spec:
       automountServiceAccountToken: false
       containers:
@@ -27,6 +47,11 @@ spec:
                 name: gearup-config
             - secretRef:
                 name: gearup-secret
+          env:
+            - name: OTEL_EXPORTER_OTLP_ENDPOINT
+              value: http://otel-collector.observabilidade.svc.cluster.local:4317
+            - name: OTEL_EXPORTER_OTLP_METRICS_TEMPORALITY_PREFERENCE
+              value: Delta
           resources:
             requests:
               cpu: 100m

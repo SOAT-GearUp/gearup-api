@@ -3,4 +3,4 @@ kind: Namespace
 metadata:
   name: gearup-production
   labels:
-    tags.datadog.com/env: production
+    tags.datadoghq.com/env: production

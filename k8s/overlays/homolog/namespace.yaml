@@ -3,4 +3,4 @@ kind: Namespace
 metadata:
   name: gearup-homolog
   labels:
-    tags.datadog.com/env: homolog
+    tags.datadoghq.com/env: homolog
